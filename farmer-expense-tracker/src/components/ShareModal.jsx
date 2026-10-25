@@ -50,26 +50,40 @@ export default function ShareModal({ activeFarmer, onClose }) {
           <h3 className="display-font" style={{ fontSize: 16, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <Share2 size={16} color="var(--primary)" /> Working Shared Farm Link
           </h3>
-          <button className="btn" style={{ padding: 4, borderRadius: '50%' }} onClick={onClose}>
-            <X size={16} />
+          <button
+            className="btn touch-target"
+            style={{
+              padding: 8,
+              borderRadius: '50%',
+              minWidth: 44,
+              minHeight: 44,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+            onClick={onClose}
+            aria-label="Close dialog"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 18 }}>
           <p style={{ fontSize: 13, color: 'var(--text-soft)', margin: '0 0 14px', lineHeight: 1.5 }}>
             This is a <strong>live, functional working URL</strong>. Anyone opening this link will immediately be prompted to join <strong>{activeFarmer.farmName}</strong> and enter their co-farmer details.
           </p>
 
           <div style={{ marginBottom: 16 }}>
             <span className="form-label">Active Working Shareable URL</span>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
               <input
                 className="form-input"
                 readOnly
                 value={activeWorkingUrl}
-                style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: 12, flex: '1 1 200px' }}
               />
-              <button className="btn btn-primary" onClick={handleCopy}>
+              <button className="btn btn-primary" style={{ flexShrink: 0, minHeight: 44 }} onClick={handleCopy}>
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 {copied ? 'Copied' : 'Copy'}
               </button>

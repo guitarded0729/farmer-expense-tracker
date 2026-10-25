@@ -73,8 +73,8 @@ app.use(notFoundHandler);
 // Global Error Handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`[SERVER] Express backend running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`[SERVER] Express backend running on http://0.0.0.0:${PORT}`);
 });
 
 export default app;

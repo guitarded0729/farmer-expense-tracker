@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Save, 
   Trash2, 
@@ -7,7 +7,9 @@ import {
   Pencil, 
   HelpCircle, 
   MapPin, 
-  ShieldAlert 
+  ShieldAlert,
+  Calendar,
+  Eye
 } from 'lucide-react';
 import { useTranslation } from '../context/LanguageContext';
 import Modal from '../components/Modal';
@@ -22,7 +24,15 @@ export default function SettingsView({
   onDeleteField,
   CATEGORY_OPTIONS = [],
   REGION_OPTIONS = [],
-  SCALE_OPTIONS = []
+  SCALE_OPTIONS = [],
+  seasons = [],
+  activeSeason,
+  onAddSeason,
+  onUpdateSeason,
+  setActiveSeasonId,
+  transactions = [],
+  openAddPlotModal,
+  setOpenAddPlotModal
 }) {
   const { t, lang, setLang } = useTranslation();
 
@@ -44,6 +54,14 @@ export default function SettingsView({
   const [fieldName, setFieldName] = useState('');
   const [fieldCrop, setFieldCrop] = useState('');
   const [fieldArea, setFieldArea] = useState('');
+  const [fieldAreaUnit, setFieldAreaUnit] = useState('acres');
+
+  // Seasons CRUD Form States
+  const [showSeasonModal, setShowSeasonModal] = useState(false);
+  const [showSeasonDetailsModal, setShowSeasonDetailsModal] = useState(false);
+  const [editingSeason, setEditingSeason] = useState(null);
+  const [viewingSeason, setViewingSeason] = useState(null);
+  const [seasonName, setSeasonName] = useState('');
 
   const handleSaveProfile = async () => {
     if (!name.trim() || !farmName.trim()) {
@@ -81,6 +99,7 @@ export default function SettingsView({
     setFieldName('');
     setFieldCrop('');
     setFieldArea('');
+    setFieldAreaUnit('acres');
     setEditingField(null);
     setShowFieldModal(true);
   };
@@ -89,6 +108,7 @@ export default function SettingsView({
     setFieldName(f.name);
     setFieldCrop(f.crop || '');
     setFieldArea(f.area || '');
+    setFieldAreaUnit(f.areaUnit || 'acres');
     setEditingField(f);
     setShowFieldModal(true);
   };
@@ -107,7 +127,7 @@ export default function SettingsView({
       name: fieldName.trim(),
       crop: fieldCrop.trim() || null,
       area: Number(fieldArea),
-      areaUnit: 'acres',
+      areaUnit: fieldAreaUnit,
       location: ''
     };
 
@@ -118,6 +138,67 @@ export default function SettingsView({
     }
     setShowFieldModal(false);
   };
+
+  // Seasons CRUD Helpers
+  const handleOpenAddSeason = () => {
+    setSeasonName('');
+    setEditingSeason(null);
+    setShowSeasonModal(true);
+  };
+
+  const handleOpenEditSeason = (s) => {
+    setSeasonName(s.name);
+    setEditingSeason(s);
+    setShowSeasonModal(true);
+  };
+
+  const handleSaveSeason = () => {
+    if (!seasonName.trim()) {
+      alert('Please enter a season name.');
+      return;
+    }
+    const payload = {
+      name: seasonName.trim()
+    };
+    if (editingSeason) {
+      onUpdateSeason(editingSeason.id, payload);
+    } else {
+      onAddSeason(payload);
+    }
+    setShowSeasonModal(false);
+  };
+
+  const handleViewSeason = (s) => {
+    setViewingSeason(s);
+    setActiveSeasonId(s.id);
+    setShowSeasonDetailsModal(true);
+  };
+
+  const getSeasonStats = (seasonId) => {
+    const seasonTxs = transactions.filter(t => t.seasonId === seasonId && t.farmerId === activeFarmer.id);
+    const expenseTotal = seasonTxs.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount), 0);
+    const incomeTotal = seasonTxs.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount), 0);
+    const profit = incomeTotal - expenseTotal;
+    
+    // Find crops from transactions and fields
+    const txCrops = seasonTxs.map(t => t.crop).filter(Boolean);
+    const fieldCrops = fields.filter(f => f.seasonId === seasonId).map(f => f.crop).filter(Boolean);
+    const allCrops = [...new Set([...txCrops, ...fieldCrops])];
+    
+    return {
+      expenseTotal,
+      incomeTotal,
+      profit,
+      cropText: allCrops.join(', ') || 'No Crop Listed'
+    };
+  };
+
+  useEffect(() => {
+    if (openAddPlotModal) {
+      handleOpenAddField();
+      setOpenAddPlotModal(false);
+    }
+  }, [openAddPlotModal]);
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -215,7 +296,7 @@ export default function SettingsView({
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{f.name}</div>
                   <div style={{ fontSize: 12, color: 'var(--text-soft)', marginTop: 2 }}>
-                    🌾 {f.crop || 'No Crop'} • 📐 {f.area} {t('fields.acres')}
+                    🌾 {f.crop || 'No Crop'} • 📐 {f.area} {t(`fields.${f.areaUnit || 'acres'}`) || f.areaUnit || 'acres'}
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>
@@ -247,7 +328,7 @@ export default function SettingsView({
         </h4>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-cols-1">
+          <div className="form-row-2col">
             <div>
               <span className="form-label">{t('onboarding.name')}</span>
               <input className="form-input" style={{ borderRadius: 'var(--radius-md)' }} value={name} onChange={(e) => setName(e.target.value)} />
@@ -258,7 +339,7 @@ export default function SettingsView({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-cols-1">
+          <div className="form-row-2col">
             <div>
               <span className="form-label">{t('onboarding.role')}</span>
               <select className="form-select" style={{ borderRadius: 'var(--radius-md)' }} value={role} onChange={(e) => setRole(e.target.value)}>
@@ -278,7 +359,7 @@ export default function SettingsView({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-cols-1">
+          <div className="form-row-2col">
             <div>
               <span className="form-label">{t('onboarding.region')}</span>
               <select className="form-select" style={{ borderRadius: 'var(--radius-md)' }} value={region} onChange={(e) => setRegion(e.target.value)}>
@@ -311,7 +392,7 @@ export default function SettingsView({
             </div>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="grid-cols-1">
+          <div className="form-row-2col">
             <div>
               <span className="form-label">{t('onboarding.phone')}</span>
               <input className="form-input" style={{ borderRadius: 'var(--radius-md)' }} value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -414,8 +495,15 @@ export default function SettingsView({
             </div>
             <div>
               <span className="form-label">{t('fields.unit')}</span>
-              <select className="form-select" style={{ borderRadius: 'var(--radius-md)' }} disabled value="acres">
+              <select
+                className="form-select"
+                style={{ borderRadius: 'var(--radius-md)' }}
+                value={fieldAreaUnit}
+                onChange={(e) => setFieldAreaUnit(e.target.value)}
+              >
                 <option value="acres">{t('fields.acres')}</option>
+                <option value="hectares">{t('fields.hectares')}</option>
+                <option value="bighas">{t('fields.bighas')}</option>
               </select>
             </div>
           </div>
@@ -441,6 +529,77 @@ export default function SettingsView({
           </div>
         </div>
       </Modal>
+
+      {/* Season CRUD Modal Form */}
+      <Modal
+        isOpen={showSeasonModal}
+        title={editingSeason ? '✏️ Edit Season Details' : '➕ Add Season'}
+        onClose={() => setShowSeasonModal(false)}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <span className="form-label">Season Name *</span>
+            <input
+              className="form-input"
+              style={{ borderRadius: 'var(--radius-md)' }}
+              placeholder="e.g. Kharif 2026"
+              value={seasonName}
+              onChange={(e) => setSeasonName(e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 10 }}>
+            <button className="btn" onClick={() => setShowSeasonModal(false)}>
+              Cancel
+            </button>
+            <button className="btn btn-primary" onClick={handleSaveSeason}>
+              Save Season
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Season Details Modal */}
+      {showSeasonDetailsModal && viewingSeason && (() => {
+        const { expenseTotal, incomeTotal, profit, cropText } = getSeasonStats(viewingSeason.id);
+        return (
+          <Modal
+            isOpen={showSeasonDetailsModal}
+            title={`🌾 Season Details: ${viewingSeason.name}`}
+            onClose={() => setShowSeasonDetailsModal(false)}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <span className="form-label" style={{ marginBottom: 4 }}>Crop Cultivated</span>
+                <strong style={{ fontSize: 16 }}>{cropText}</strong>
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: 'var(--text-soft)' }}>Expenses:</span>
+                  <strong style={{ fontSize: 15, color: 'var(--danger)' }}>₹{expenseTotal.toLocaleString('en-IN')}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ color: 'var(--text-soft)' }}>Income:</span>
+                  <strong style={{ fontSize: 15, color: 'var(--positive)' }}>₹{incomeTotal.toLocaleString('en-IN')}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--line)', paddingTop: 8 }}>
+                  <span style={{ fontWeight: 700 }}>Profit:</span>
+                  <strong style={{ fontSize: 16, color: profit >= 0 ? 'var(--positive)' : 'var(--danger)' }}>
+                    {profit >= 0 ? '' : '−'}₹{Math.abs(profit).toLocaleString('en-IN')}
+                  </strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                <button className="btn btn-primary" onClick={() => setShowSeasonDetailsModal(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </Modal>
+        );
+      })()}
 
     </div>
   );

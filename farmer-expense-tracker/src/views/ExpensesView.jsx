@@ -396,20 +396,21 @@ export default function ExpensesView({
                   padding: '14px 16px',
                   borderLeft: `5px solid ${isExpenseLedger ? 'var(--danger)' : 'var(--positive)'}`,
                   cursor: 'pointer',
-                  borderRadius: 'var(--radius-md)'
+                  borderRadius: 'var(--radius-md)',
+                  gap: 12
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ fontSize: 24 }}>{icon}</span>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700 }}>{label}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-soft)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, overflow: 'hidden' }}>
+                  <span style={{ fontSize: 24, flexShrink: 0 }}>{icon}</span>
+                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-soft)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {tx.date} {tx.crop ? `• 🌾 ${tx.crop}` : ''} {matchedField ? `• 📍 ${matchedField.name}` : ''}
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                   <strong
                     style={{
                       fontSize: 18,
@@ -570,6 +571,7 @@ export default function ExpensesView({
             </span>
             <input
               type="number"
+              inputMode="decimal"
               className="form-input"
               style={{ fontSize: 20, fontWeight: 800, height: 48, borderRadius: 'var(--radius-md)' }}
               placeholder="e.g. 5000"
@@ -583,12 +585,7 @@ export default function ExpensesView({
             <span className="form-label" style={{ fontSize: 13, fontWeight: 700 }}>
               {isExpenseLedger ? t('expenses.what_bought_prompt') : t('expenses.source_prompt')} *
             </span>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 8,
-              marginTop: 6
-            }}>
+            <div className="grid-category-picker" style={{ marginTop: 6 }}>
               {Object.keys(isExpenseLedger ? CATEGORIES : INCOME_CATEGORIES).map((key) => {
                 const isSelected = category === key;
                 return (
@@ -606,15 +603,18 @@ export default function ExpensesView({
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: 58,
                       gap: 4,
                       backgroundColor: isSelected ? 'var(--primary-soft)' : 'var(--surface)',
                       borderColor: isSelected ? 'var(--primary)' : 'var(--line)',
                       color: isSelected ? 'var(--primary-dark)' : 'var(--text)',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.15s ease',
+                      touchAction: 'manipulation'
                     }}
                   >
                     <span style={{ fontSize: 18 }}>{getIcon(key)}</span>
-                    <span style={{ textAlign: 'center', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%' }}>
+                    <span style={{ textAlign: 'center', whiteSpace: 'normal', lineHeight: 1.15, fontSize: 11, width: '100%', wordBreak: 'break-word' }}>
                       {getCategoryLabel(key).replace(/^[^\s]+\s+/, '')}
                     </span>
                   </button>
@@ -624,7 +624,7 @@ export default function ExpensesView({
           </div>
 
           {/* STEP 3 & 4: Crop associated & Date */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="form-row-2col">
             <div>
               <span className="form-label">{t('expenses.choose_crop')}</span>
               <input
@@ -794,13 +794,14 @@ export default function ExpensesView({
           </div>
 
           {/* Form Actions */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 10 }}>
-            <button className="btn" onClick={() => setShowFormModal(false)}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+            <button className="btn" style={{ flex: '1 1 120px' }} onClick={() => setShowFormModal(false)}>
               {t('common.cancel')}
             </button>
             <button
               className="btn btn-primary"
               style={{
+                flex: '1 1 140px',
                 backgroundColor: isExpenseLedger ? 'var(--primary)' : 'var(--positive)',
                 borderColor: isExpenseLedger ? 'var(--primary-dark)' : 'var(--positive)'
               }}

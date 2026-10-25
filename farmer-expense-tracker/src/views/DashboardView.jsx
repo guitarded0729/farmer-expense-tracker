@@ -15,11 +15,17 @@ export default function DashboardView({
   transactions = [],
   budgets = [],
   seasons = [],
+  fields = [],
   activeSeason,
   activeFarmer,
+  farmers = [],
   onNavigate,
   onAddExpenseClick,
   onAddIncomeClick,
+  setActiveSeasonId,
+  onAddPlotClick,
+  onAddSeasonClick,
+  onAddFarmerClick,
   fmt
 }) {
   const { t, lang } = useTranslation();
@@ -168,7 +174,7 @@ export default function DashboardView({
       {/* Season timeline tag */}
       <div style={{
         backgroundColor: 'var(--primary-soft)',
-        padding: '10px 16px',
+        padding: '8px 14px',
         borderRadius: 'var(--radius-md)',
         display: 'inline-flex',
         alignItems: 'center',
@@ -179,15 +185,33 @@ export default function DashboardView({
         alignSelf: 'flex-start'
       }}>
         <span>📅</span>
-        <span>{t('home.this_season')} {activeSeason?.name || 'No Season Configured'}</span>
+        <span>{t('home.this_season')}</span>
+        <select
+          value={activeSeason?.id || ''}
+          onChange={(e) => setActiveSeasonId && setActiveSeasonId(e.target.value)}
+          className="form-select"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            fontWeight: 700,
+            color: 'var(--primary-dark)',
+            padding: '0 24px 0 0',
+            width: 'auto',
+            height: 'auto',
+            cursor: 'pointer',
+            fontSize: 14,
+            outline: 'none',
+            boxShadow: 'none'
+          }}
+        >
+          {seasons.map((s) => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
       </div>
 
       {/* Main Income / Expense / Profit Display */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 16
-      }} className="grid-cols-3">
+      <div className="grid-summary-cards">
         {/* Spent */}
         <div className="card" style={{ borderLeft: '5px solid var(--danger)', padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-soft)', fontSize: 13, fontWeight: 600 }}>
@@ -227,47 +251,78 @@ export default function DashboardView({
         </div>
       </div>
 
-      {/* Giant Quick Action Buttons */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 16,
-        marginTop: 4
-      }} className="grid-cols-2">
-        <button
-          className="btn btn-primary"
-          style={{
-            padding: '16px 20px',
-            fontSize: 16,
-            fontWeight: 700,
-            borderRadius: 'var(--radius-lg)',
-            justifyContent: 'center',
-            height: 56,
-            boxShadow: 'var(--shadow-md)'
-          }}
-          onClick={onAddExpenseClick}
-        >
-          <Plus size={20} /> {t('common.add_expense')}
-        </button>
+      {/* Quick Actions */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+        <h3 className="display-font" style={{ fontSize: 16, margin: '0 0 4px' }}>
+          ⚡ {t('common.quick_actions')}
+        </h3>
+        <div className="grid-quick-actions">
+          {/* Add Expense */}
+          <button
+            className="btn btn-primary"
+            style={{ padding: '12px 14px', fontSize: 14, fontWeight: 700, borderRadius: 'var(--radius-md)', justifyContent: 'center', height: 48 }}
+            onClick={onAddExpenseClick}
+          >
+            <Plus size={16} /> {t('common.add_expense')}
+          </button>
 
-        <button
-          className="btn"
-          style={{
-            padding: '16px 20px',
-            fontSize: 16,
-            fontWeight: 700,
-            borderRadius: 'var(--radius-lg)',
-            justifyContent: 'center',
-            height: 56,
-            backgroundColor: 'var(--positive-soft)',
-            borderColor: 'var(--positive)',
-            color: 'var(--positive)',
-            boxShadow: 'var(--shadow-md)'
-          }}
-          onClick={onAddIncomeClick}
-        >
-          <Plus size={20} /> {t('common.add_income')}
-        </button>
+          {/* Add Income */}
+          <button
+            className="btn"
+            style={{
+              padding: '12px 14px',
+              fontSize: 14,
+              fontWeight: 700,
+              borderRadius: 'var(--radius-md)',
+              justifyContent: 'center',
+              height: 48,
+              backgroundColor: 'var(--positive-soft)',
+              borderColor: 'var(--positive)',
+              color: 'var(--positive)'
+            }}
+            onClick={onAddIncomeClick}
+          >
+            <Plus size={16} /> {t('common.add_income')}
+          </button>
+
+          {/* Add Season */}
+          <button
+            className="btn"
+            style={{
+              padding: '12px 14px',
+              fontSize: 14,
+              fontWeight: 700,
+              borderRadius: 'var(--radius-md)',
+              justifyContent: 'center',
+              height: 48,
+              backgroundColor: 'var(--primary-soft)',
+              borderColor: 'var(--primary)',
+              color: 'var(--primary-dark)'
+            }}
+            onClick={onAddSeasonClick}
+          >
+            <Plus size={16} /> {t('common.add_season')}
+          </button>
+
+          {/* Add Farmer */}
+          <button
+            className="btn"
+            style={{
+              padding: '12px 14px',
+              fontSize: 14,
+              fontWeight: 700,
+              borderRadius: 'var(--radius-md)',
+              justifyContent: 'center',
+              height: 48,
+              backgroundColor: '#e0f2fe',
+              borderColor: '#0284c7',
+              color: '#0369a1'
+            }}
+            onClick={onAddFarmerClick}
+          >
+            <Plus size={16} /> {t('common.add_farmer')}
+          </button>
+        </div>
       </div>
 
       {/* Season Budget Progress */}
@@ -346,8 +401,16 @@ export default function DashboardView({
             )}
           </div>
 
-          <div style={{ borderTop: '1px dashed var(--line)', paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: nextSeasonForecast.amount > budgetTotal && budgetTotal > 0 ? 'var(--danger)' : 'var(--positive)' }}>
+          <div style={{
+            borderTop: '1px dashed var(--line)',
+            paddingTop: 12,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 10
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 700, color: nextSeasonForecast.amount > budgetTotal && budgetTotal > 0 ? 'var(--danger)' : 'var(--positive)', flex: 1, minWidth: 200 }}>
               {budgetTotal > 0 ? (
                 nextSeasonForecast.amount > budgetTotal ? (
                   `🔴 ${t('prediction.exceed_statement')} (${t('prediction.exceed_warn').replace('{amount}', fmt(nextSeasonForecast.amount - budgetTotal))})`
@@ -359,11 +422,11 @@ export default function DashboardView({
               )}
             </span>
             <button
-              className="btn btn-secondary"
-              style={{ padding: '6px 12px', fontSize: 12, borderRadius: 'var(--radius-md)' }}
+              className="btn btn-secondary touch-target"
+              style={{ padding: '8px 14px', fontSize: 12, borderRadius: 'var(--radius-md)' }}
               onClick={() => onNavigate('prediction')}
             >
-              {t('common.see_details')} <ChevronRight size={12} />
+              {t('common.see_details')} <ChevronRight size={14} />
             </button>
           </div>
         </div>
@@ -381,7 +444,107 @@ export default function DashboardView({
         </div>
       )}
 
-      {/* Recent Transactions List */}
+      {/* My Plots (Fields) List Card */}
+      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 4 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: 10 }}>
+          <h3 className="display-font" style={{ fontSize: 16, margin: 0 }}>
+            📍 {t('fields.my_fields')}
+          </h3>
+          <button
+            className="btn btn-primary"
+            style={{ padding: '6px 12px', fontSize: 12, borderRadius: 'var(--radius-md)' }}
+            onClick={onAddPlotClick}
+          >
+            <Plus size={14} /> {t('fields.add_field')}
+          </button>
+        </div>
+
+        {fields.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 16, color: 'var(--text-soft)', fontSize: 13 }}>
+            No field plots mapped yet.
+          </div>
+        ) : (
+          <div className="grid-responsive-cards">
+            {fields.map((f) => (
+              <div
+                key={f.id}
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--line)',
+                  backgroundColor: 'var(--surface)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>🌾</span> {f.name}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-soft)' }}>
+                  {f.crop || 'No Crop'} • {f.area} {t(`fields.${f.areaUnit || 'acres'}`) || f.areaUnit || 'acres'}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* My Farmers List Card */}
+      <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 4 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: 10 }}>
+          <h3 className="display-font" style={{ fontSize: 16, margin: 0 }}>
+            👨‍🌾 {t('common.my_farmers')}
+          </h3>
+          <button
+            className="btn btn-primary"
+            style={{ padding: '6px 12px', fontSize: 12, borderRadius: 'var(--radius-md)' }}
+            onClick={onAddFarmerClick}
+          >
+            <Plus size={14} /> {t('common.add_farmer')}
+          </button>
+        </div>
+
+        <div className="grid-responsive-cards">
+          {farmers
+            .filter((f) => f.farmName === activeFarmer.farmName)
+            .map((f) => (
+              <div
+                key={f.id}
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--line)',
+                  backgroundColor: 'var(--surface)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10
+                }}
+              >
+                <div style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--primary)',
+                  color: 'var(--text-inverse)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: 14
+                }}>
+                  {f.name ? f.name[0].toUpperCase() : 'F'}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>{f.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-soft)' }}>
+                    {f.role}
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
       <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 4 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: 10 }}>
           <h3 className="display-font" style={{ fontSize: 16, margin: 0 }}>

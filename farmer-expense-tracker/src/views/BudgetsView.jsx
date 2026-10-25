@@ -68,7 +68,7 @@ export default function BudgetsView({
       </div>
 
       {/* Grid of Budget Cards */}
-      <div className="grid-cols-3">
+      <div className="grid-responsive-cards">
         {Object.keys(CATEGORIES).map((key) => {
           const limit = budgetMap[key] || 0;
           const spent = categoryTotals[key] || 0;
@@ -97,6 +97,7 @@ export default function BudgetsView({
             <span className="form-label">Budget Limit (INR ₹)</span>
             <input
               type="number"
+              inputMode="decimal"
               className="form-input"
               style={{ fontSize: 16, fontWeight: 700 }}
               placeholder="e.g. 30000"
@@ -108,11 +109,11 @@ export default function BudgetsView({
             </span>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-            <button className="btn" onClick={() => setShowEditModal(false)}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
+            <button className="btn" style={{ flex: '1 1 100px' }} onClick={() => setShowEditModal(false)}>
               Cancel
             </button>
-            <button className="btn btn-primary" onClick={handleSave}>
+            <button className="btn btn-primary" style={{ flex: '1 1 140px' }} onClick={handleSave}>
               Save Budget Limit
             </button>
           </div>

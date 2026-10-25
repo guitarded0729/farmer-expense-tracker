@@ -31,13 +31,13 @@ export default function TransactionCard({
       animation: 'fadeIn 0.2s ease-out'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-        <div>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ color: color, display: 'inline-flex' }}><Icon size={14} /></span>
+            <span style={{ fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4, wordBreak: 'break-word' }}>
+              <span style={{ color: color, display: 'inline-flex', flexShrink: 0 }}><Icon size={14} /></span>
               {label}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--text-soft)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-soft)', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
               <Calendar size={11} /> {tx.date}
             </span>
             {tx.crop && (
@@ -52,17 +52,18 @@ export default function TransactionCard({
             )}
           </div>
           {tx.note && (
-            <p style={{ fontSize: 12, color: 'var(--text-soft)', marginTop: 6, fontStyle: 'italic' }}>
+            <p style={{ fontSize: 12, color: 'var(--text-soft)', marginTop: 6, fontStyle: 'italic', wordBreak: 'break-word' }}>
               "{tx.note}"
             </p>
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <span className="display-font tabular" style={{
             fontSize: 16,
             fontWeight: 700,
-            color: isExpense ? 'var(--danger)' : 'var(--positive)'
+            color: isExpense ? 'var(--danger)' : 'var(--positive)',
+            whiteSpace: 'nowrap'
           }}>
             {isExpense ? '−' : '+'}{fmt(tx.amount)}
           </span>

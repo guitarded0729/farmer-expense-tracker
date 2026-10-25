@@ -30,7 +30,7 @@ export default function PredictionCard({ predictedAmt, changePct, recommendedAmt
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 16 }}>
         <div>
           <span style={{ fontSize: 11, color: 'var(--text-soft)', display: 'block', marginBottom: 2 }}>
             PREDICTED TOTAL SPEND

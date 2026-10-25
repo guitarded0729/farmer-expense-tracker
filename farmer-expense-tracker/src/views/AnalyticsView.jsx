@@ -197,11 +197,11 @@ export default function AnalyticsView({
           </h4>
           <div style={{ width: '100%', height: 260 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
-                <XAxis dataKey="name" stroke="var(--text-soft)" style={{ fontSize: 11 }} />
-                <YAxis stroke="var(--text-soft)" style={{ fontSize: 11 }} />
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
+                <XAxis dataKey="name" stroke="var(--text-soft)" style={{ fontSize: 10 }} interval={0} angle={-25} textAnchor="end" height={40} />
+                <YAxis stroke="var(--text-soft)" style={{ fontSize: 10 }} />
                 <Tooltip formatter={(v) => fmt(v)} contentStyle={{ fontSize: 12, borderRadius: 4 }} />
-                <Bar dataKey="Spent" fill="var(--primary)" radius={[4, 4, 0, 0]} barSize={36} />
+                <Bar dataKey="Spent" fill="var(--primary)" radius={[4, 4, 0, 0]} maxBarSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>

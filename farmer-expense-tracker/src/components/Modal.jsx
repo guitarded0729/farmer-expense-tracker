@@ -59,17 +59,28 @@ export default function Modal({ isOpen, title, onClose, children }) {
         }}>
           <h3 className="display-font" style={{ fontSize: 16, margin: 0 }}>{title}</h3>
           <button
-            className="btn"
-            style={{ padding: 4, borderRadius: '50%' }}
+            className="btn touch-target"
+            style={{
+              padding: 8,
+              borderRadius: '50%',
+              minWidth: 44,
+              minHeight: 44,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
             onClick={onClose}
+            aria-label="Close dialog"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
 
         <div style={{
-          padding: '20px',
+          padding: '16px 18px',
           overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
           flexGrow: 1
         }}>
           {children}

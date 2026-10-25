@@ -163,7 +163,7 @@ export default function PredictionView({
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Overview stats block */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }} className="grid-cols-1">
+      <div className="grid-prediction-overview">
         
         {/* ML Forecast summary card */}
         <div className="card" style={{
@@ -199,12 +199,12 @@ export default function PredictionView({
           {/* Suggested safety margin budgets button */}
           {onApplyRecommendedBudget && (
             <div style={{ borderTop: '1px dashed var(--line)', paddingTop: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 10 }}>
                 <div>
                   <span style={{ fontSize: 11, color: 'var(--text-soft)', display: 'block' }}>RECOMMENDED SAFETY BUDGET (+10% margin)</span>
                   <strong className="mono-font" style={{ fontSize: 16 }}>{fmt(recBudget)}</strong>
                 </div>
-                <button className="btn btn-primary" onClick={() => onApplyRecommendedBudget(recBudget)}>
+                <button className="btn btn-primary" style={{ minHeight: 44 }} onClick={() => onApplyRecommendedBudget(recBudget)}>
                   Apply Recommended Budget
                 </button>
               </div>
@@ -264,10 +264,10 @@ export default function PredictionView({
       {/* Regression LineChart */}
       <ChartCard title="🔮 OLS Linear Regression Trend Analysis" height={320}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 15, right: 30, left: -10, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 15, right: 15, left: -20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
-            <XAxis dataKey="name" stroke="var(--text-soft)" style={{ fontSize: 11 }} />
-            <YAxis stroke="var(--text-soft)" style={{ fontSize: 11 }} />
+            <XAxis dataKey="name" stroke="var(--text-soft)" style={{ fontSize: 10 }} />
+            <YAxis stroke="var(--text-soft)" style={{ fontSize: 10 }} />
             <Tooltip formatter={(v) => fmt(v)} contentStyle={{ fontSize: 12, borderRadius: 4 }} />
             <Legend wrapperStyle={{ fontSize: 12 }} />
             <Line
@@ -295,7 +295,7 @@ export default function PredictionView({
         <h3 className="display-font" style={{ fontSize: 16, borderBottom: '1px solid var(--line)', paddingBottom: 8 }}>
           📋 Expected Next-Season Costs by Category
         </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+        <div className="grid-responsive-cards">
           {categoryPredictions.map((p) => (
             <div key={p.category} style={{
               padding: 12,

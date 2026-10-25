@@ -74,12 +74,26 @@ export default function AddCoFarmerModal({
           <h3 className="display-font" style={{ fontSize: 16, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
             <UserPlus size={16} color="var(--primary)" /> Add Co-Farmer Profile
           </h3>
-          <button className="btn" style={{ padding: 4, borderRadius: '50%' }} onClick={onClose}>
-            <X size={16} />
+          <button
+            className="btn touch-target"
+            style={{
+              padding: 8,
+              borderRadius: '50%',
+              minWidth: 44,
+              minHeight: 44,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+            onClick={onClose}
+            aria-label="Close dialog"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 18, overflowY: 'auto', WebkitOverflowScrolling: 'touch', maxHeight: 'calc(80dvh)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
               <span className="form-label">Co-Farmer Name *</span>
@@ -91,7 +105,7 @@ export default function AddCoFarmerModal({
               <input className="form-input" placeholder="Enter farm plot name..." value={farmName} onChange={(e) => setFarmName(e.target.value)} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="form-row-2col">
               <div>
                 <span className="form-label">Role</span>
                 <select className="form-select" value={role} onChange={(e) => setRole(e.target.value)}>
@@ -104,7 +118,7 @@ export default function AddCoFarmerModal({
 
               <div>
                 <span className="form-label">Equity / Cost Share %</span>
-                <input className="form-input" type="number" min="0" max="100" placeholder="e.g. 50" value={equity} onChange={(e) => setEquity(e.target.value)} />
+                <input className="form-input" type="number" inputMode="numeric" min="0" max="100" placeholder="e.g. 50" value={equity} onChange={(e) => setEquity(e.target.value)} />
               </div>
             </div>
 
@@ -131,7 +145,7 @@ export default function AddCoFarmerModal({
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="form-row-2col">
               <div>
                 <span className="form-label">Region / Zone</span>
                 <select className="form-select" value={region} onChange={(e) => setRegion(e.target.value)}>
@@ -153,7 +167,7 @@ export default function AddCoFarmerModal({
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="form-row-2col">
               <div>
                 <span className="form-label">Phone</span>
                 <input className="form-input" placeholder="+91 98765 00000" value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -166,7 +180,7 @@ export default function AddCoFarmerModal({
 
             <button
               className="btn btn-primary"
-              style={{ width: '100%', marginTop: 8, height: 42 }}
+              style={{ width: '100%', marginTop: 8, height: 44, minHeight: 44, borderRadius: 'var(--radius-md)' }}
               onClick={submit}
               disabled={!name.trim()}
             >

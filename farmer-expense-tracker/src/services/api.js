@@ -1,4 +1,23 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+export function getApiBaseUrl() {
+  const envUrl = import.meta.env.VITE_API_URL;
+  // If explicitly configured for a remote or production domain
+  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    return envUrl;
+  }
+  // When accessed from a phone or another device on the same local network
+  if (
+    typeof window !== 'undefined' &&
+    window.location?.hostname &&
+    window.location.hostname !== 'localhost' &&
+    window.location.hostname !== '127.0.0.1'
+  ) {
+    const protocol = window.location.protocol || 'http:';
+    return `${protocol}//${window.location.hostname}:5000`;
+  }
+  return envUrl || 'http://localhost:5000';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 async function handleResponse(response) {
   const data = await response.json();

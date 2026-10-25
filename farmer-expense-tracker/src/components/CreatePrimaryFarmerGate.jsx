@@ -58,8 +58,8 @@ export default function CreatePrimaryFarmerGate({
       backgroundColor: 'var(--bg-dark)',
       position: 'relative'
     }}>
-      {/* Absolute language selector at top right */}
-      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+      {/* Language selector at top right */}
+      <div style={{ position: 'absolute', top: 'calc(14px + var(--sat))', right: 16, zIndex: 10 }}>
         <select
           className="form-select"
           style={{
@@ -173,7 +173,7 @@ export default function CreatePrimaryFarmerGate({
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="form-row-2col">
               <div>
                 <span className="form-label">{t('onboarding.role')}</span>
                 <select className="form-select" style={{ borderRadius: 'var(--radius-md)' }} value={role} onChange={(e) => setRole(e.target.value)}>
@@ -237,7 +237,7 @@ export default function CreatePrimaryFarmerGate({
               </select>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="form-row-2col">
               <div>
                 <span className="form-label">{t('onboarding.phone')}</span>
                 <input className="form-input" style={{ borderRadius: 'var(--radius-md)' }} placeholder="+91 98765 00000" value={phone} onChange={(e) => setPhone(e.target.value)} />

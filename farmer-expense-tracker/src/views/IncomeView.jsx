@@ -268,19 +268,19 @@ export default function IncomeView({
           borderTop: '1px solid var(--line)',
           paddingTop: 12
         }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span className="form-label" style={{ margin: 0 }}>Start:</span>
-              <input type="date" className="form-input" style={{ width: 140, padding: '4px 8px', fontSize: 12 }} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <input type="date" className="form-input" style={{ width: 'auto', minWidth: 130, padding: '6px 10px', fontSize: 13 }} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span className="form-label" style={{ margin: 0 }}>End:</span>
-              <input type="date" className="form-input" style={{ width: 140, padding: '4px 8px', fontSize: 12 }} value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              <input type="date" className="form-input" style={{ width: 'auto', minWidth: 130, padding: '6px 10px', fontSize: 13 }} value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             </div>
           </div>
 
-          <button className="btn" style={{ padding: '6px 12px', fontSize: 12 }} onClick={handleResetFilters}>
-            <RefreshCw size={12} /> Reset Filters
+          <button className="btn" style={{ padding: '8px 14px', fontSize: 13 }} onClick={handleResetFilters}>
+            <RefreshCw size={13} /> Reset Filters
           </button>
         </div>
       </div>
@@ -322,6 +322,7 @@ export default function IncomeView({
             <span className="form-label">Income Value (INR ₹) *</span>
             <input
               type="number"
+              inputMode="decimal"
               className="form-input"
               style={{ fontSize: 16, fontWeight: 700 }}
               placeholder="e.g. 85000"
@@ -330,7 +331,7 @@ export default function IncomeView({
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="form-row-2col">
             {/* Category Select */}
             <div>
               <span className="form-label">Income Category *</span>
@@ -350,7 +351,7 @@ export default function IncomeView({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="form-row-2col">
             {/* Crop Type input */}
             <div>
               <span className="form-label">Crop Associated</span>
@@ -416,11 +417,11 @@ export default function IncomeView({
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 10 }}>
-            <button className="btn" onClick={() => setShowAddModal(false)}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+            <button className="btn" style={{ flex: '1 1 100px' }} onClick={() => setShowAddModal(false)}>
               Cancel
             </button>
-            <button className="btn btn-primary" onClick={handleSave}>
+            <button className="btn btn-primary" style={{ flex: '1 1 140px' }} onClick={handleSave}>
               Save Income
             </button>
           </div>

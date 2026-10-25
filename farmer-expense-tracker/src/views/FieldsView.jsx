@@ -144,7 +144,7 @@ export default function FieldsView({
           onAction={handleOpenAdd}
         />
       ) : (
-        <div className="grid-cols-3">
+        <div className="grid-responsive-cards">
           {fields.map((f) => {
             const spent = fieldExpenseMap[f.id] || 0;
             const sizeVal = Number(f.area || 0);
@@ -270,13 +270,14 @@ export default function FieldsView({
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 10 }}>
+          <div className="form-row-2col">
             {/* Area Size */}
             <div>
               <span className="form-label">Field Area / Size *</span>
               <input
                 type="number"
                 step="0.01"
+                inputMode="decimal"
                 className="form-input"
                 placeholder="e.g. 2.5"
                 value={area}

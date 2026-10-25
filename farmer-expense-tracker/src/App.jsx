@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { LanguageProvider, useTranslation } from './context/LanguageContext';
 import * as api from './services/api';
+import './App.css';
 import {
   Sprout,
   Droplets,
@@ -33,6 +34,7 @@ import FieldsView from './views/FieldsView';
 import PredictionView from './views/PredictionView';
 import UnusualView from './views/UnusualView';
 import SettingsView from './views/SettingsView';
+import SeasonsView from './views/SeasonsView';
 
 /* ------------------------------------------------------------------ */
 /* Design Tokens / Config Constants                                    */
@@ -102,6 +104,8 @@ function FarmLedgerContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showAddFarmerModal, setShowAddFarmerModal] = useState(false);
+  const [openAddPlotModal, setOpenAddPlotModal] = useState(false);
+  const [openAddSeasonModal, setOpenAddSeasonModal] = useState(false);
 
   // Persist activeFarmerId
   useEffect(() => {
@@ -223,6 +227,36 @@ function FarmLedgerContent() {
     } catch (err) {
       alert('Failed to delete field plot: ' + err.message);
     }
+  };
+
+  /* ---- Season Helpers ---- */
+  const addSeason = async (seasonData) => {
+    try {
+      const created = await api.createSeason(seasonData);
+      setSeasons((prev) => [...prev, created]);
+      setActiveSeasonId(created.id);
+    } catch (err) {
+      alert('Failed to add season: ' + err.message);
+    }
+  };
+
+  const updateSeason = async (id, patch) => {
+    try {
+      const updated = await api.updateSeason(id, patch);
+      setSeasons((prev) => prev.map((x) => (x.id === id ? updated : x)));
+    } catch (err) {
+      alert('Failed to update season: ' + err.message);
+    }
+  };
+
+  const handleAddPlotClick = () => {
+    setActiveTab('settings');
+    setOpenAddPlotModal(true);
+  };
+
+  const handleAddSeasonClick = () => {
+    setActiveTab('seasons');
+    setOpenAddSeasonModal(true);
   };
 
   /* ---- Derived States ---- */
@@ -703,7 +737,7 @@ function FarmLedgerContent() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg)' }}>
+    <div className="app-layout-container">
       {/* Sidebar Navigation */}
       <Sidebar
         activeTab={activeTab}
@@ -718,18 +752,7 @@ function FarmLedgerContent() {
       />
 
       {/* Main Content Layout Container */}
-      <div
-        className="main-content-pane"
-        style={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-          marginLeft: 260,
-          width: 'calc(100% - 260px)',
-          transition: 'all 0.15s ease'
-        }}
-      >
+      <div className="main-content-pane">
         {/* Navigation Bar */}
         <Navbar
           activeTab={activeTab}
@@ -746,7 +769,7 @@ function FarmLedgerContent() {
             <DashboardView
               transactions={transactions}
               budgets={budgets}
-              fields={fields}
+              fields={fields.filter((f) => f.farmerId === activeFarmer.id)}
               seasons={seasons}
               activeSeason={activeSeason}
               activeFarmer={activeFarmer}
@@ -760,6 +783,10 @@ function FarmLedgerContent() {
                 setActiveTab('expenses');
                 setExpenseFormModeOnLoad('income');
               }}
+              setActiveSeasonId={setActiveSeasonId}
+              onAddPlotClick={handleAddPlotClick}
+              onAddSeasonClick={handleAddSeasonClick}
+              onAddFarmerClick={() => setShowAddFarmerModal(true)}
               fmt={fmt}
             />
           )}
@@ -877,6 +904,30 @@ function FarmLedgerContent() {
               onAddField={addField}
               onUpdateField={updateField}
               onDeleteField={deleteField}
+              seasons={seasons}
+              activeSeason={activeSeason}
+              onAddSeason={addSeason}
+              onUpdateSeason={updateSeason}
+              setActiveSeasonId={setActiveSeasonId}
+              transactions={transactions}
+              openAddPlotModal={openAddPlotModal}
+              setOpenAddPlotModal={setOpenAddPlotModal}
+            />
+          )}
+
+          {activeTab === 'seasons' && (
+            <SeasonsView
+              seasons={seasons}
+              activeSeason={activeSeason}
+              onAddSeason={addSeason}
+              onUpdateSeason={updateSeason}
+              setActiveSeasonId={setActiveSeasonId}
+              transactions={transactions}
+              fields={fields}
+              activeFarmer={activeFarmer}
+              openAddSeasonModal={openAddSeasonModal}
+              setOpenAddSeasonModal={setOpenAddSeasonModal}
+              fmt={fmt}
             />
           )}
         </main>
@@ -887,6 +938,17 @@ function FarmLedgerContent() {
         <ShareModal
           activeFarmer={activeFarmer}
           onClose={() => setShowShareModal(false)}
+        />
+      )}
+
+      {showAddFarmerModal && (
+        <AddCoFarmerModal
+          activeFarmer={activeFarmer}
+          onClose={() => setShowAddFarmerModal(false)}
+          onAddFarmer={handleAddCoFarmer}
+          CATEGORY_OPTIONS={CATEGORY_OPTIONS}
+          REGION_OPTIONS={REGION_OPTIONS}
+          SCALE_OPTIONS={SCALE_OPTIONS}
         />
       )}
       
