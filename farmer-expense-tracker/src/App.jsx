@@ -130,7 +130,7 @@ function FarmLedgerContent() {
     return null;
   });
 
-  /* ---- Load Initial Data from Backend API ---- */
+  /* ---- Load Initial Data from Backend API / Local Hybrid Storage ---- */
   useEffect(() => {
     let isMounted = true;
     async function loadInitialData() {
@@ -146,20 +146,22 @@ function FarmLedgerContent() {
 
         if (!isMounted) return;
 
-        setFarmers(fetchedFarmers);
-        setSeasons(fetchedSeasons);
-        setTransactions(fetchedTx);
-        setFields(fetchedFields);
+        const farmersList = fetchedFarmers || [];
+        setFarmers(farmersList);
+        setSeasons(fetchedSeasons || []);
+        setTransactions(fetchedTx || []);
+        setFields(fetchedFields || []);
 
-        if (fetchedSeasons.length > 0) {
+        if (fetchedSeasons && fetchedSeasons.length > 0) {
           const sorted = [...fetchedSeasons].sort((a, b) => a.order - b.order);
           setActiveSeasonId((prev) => prev || sorted[sorted.length - 1].id);
         }
-      } catch (err) {
-        console.error('Error loading data from backend:', err);
-        if (isMounted) {
-          setApiError(err.message || 'Failed to connect to backend server.');
+
+        if (farmersList.length > 0) {
+          setActiveFarmerId((prev) => prev || farmersList[0].id);
         }
+      } catch (err) {
+        console.warn('Initial data load notice:', err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -702,19 +704,21 @@ function FarmLedgerContent() {
 
   if (apiError) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-dark)' }}>
-        <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 480 }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-dark)', padding: 16 }}>
+        <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 480, width: '100%' }}>
           <AlertTriangle size={36} color="var(--danger)" style={{ marginBottom: 12, margin: '0 auto 12px' }} />
           <h3 className="display-font" style={{ fontSize: 18, color: 'var(--danger)', margin: 0 }}>Database Connection Notice</h3>
           <p style={{ fontSize: 13, color: 'var(--text-soft)', margin: '8px 0 16px', lineHeight: 1.5 }}>
-            Could not connect to the Express + PostgreSQL backend API. Make sure the backend server is running at <code>http://localhost:5000</code>.
+            Could not connect to the remote backend API. You can continue using KrishiKhaata in client storage mode with full offline functionality.
           </p>
-          <div style={{ fontSize: 11, color: 'var(--text-soft)', margin: '0 0 16px', fontFamily: 'var(--font-mono)', background: 'var(--bg-dark)', padding: 10, borderRadius: 4, textAlign: 'left', overflowX: 'auto' }}>
-            {apiError}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn btn-primary" onClick={() => setApiError(null)}>
+              Continue in Demo / Client Mode
+            </button>
+            <button className="btn" onClick={() => window.location.reload()}>
+              Retry Connection
+            </button>
           </div>
-          <button className="btn btn-primary" onClick={() => window.location.reload()}>
-            Retry
-          </button>
         </div>
       </div>
     );
